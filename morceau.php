@@ -28,8 +28,8 @@
 					<header><h1>Edition d'un morceau</h1></header>
 					<section>
                         <?php
-                            if(isset($_SESSION['erreuredition'])) {
-                                echo '<p class="warning">' . htmlspecialchars($_SESSION['erreuredition']) . '</p>';
+                            if(isset($_SESSION['erreurEdition'])) {
+                                echo '<p class="warning">' . htmlspecialchars($_SESSION['erreurEdition']) . '</p>';
                             }
 	        			?>
 						<form action="" onsubmit="" method="post" id="formmorceau">
@@ -123,3 +123,6 @@
 		</div> 
 	</body>
 </html> 
+<?php 
+unset($_SESSION['erreurEdition']);
+?>

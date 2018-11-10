@@ -31,9 +31,17 @@ if($_SESSION['edition_morceau']) { // si on est en mode édition, c'est-à-dire 
     // on efface les élèves de ce morceau, pour pouvoir ajouter proprement les élèves_tmp ensuite
     $req = $bdd->prepare('DELETE FROM eleves WHERE morceau_id = ?');
     $req->execute(array($_SESSION['morceau_tmp']['id']));
-} else {
-    $req = $bdd->prepare('INSERT INTO morceaux (audition_id, titre, compositeur, duree, chaises, pupitres, materiel) VALUES(:audid, :nvtitre, :nvcompositeur, MAKETIME(0, :nvminutes, :nvsecondes), :nvchaises, :nvpupitres, :nvmateriel)');
+}
+else
+{ // si c'est un nouveau morceau
+    $req = $bdd->prepare('SELECT MAX(ordre) AS ordre_max FROM morceaux');
+    $req->execute();
+    $nvordre = 1 + $req->fetch()['ordre_max'];
+    $req->closeCursor();
+    
+    $req = $bdd->prepare('INSERT INTO morceaux (ordre, audition_id, titre, compositeur, duree, chaises, pupitres, materiel) VALUES(:nvordre, :audid, :nvtitre, :nvcompositeur, MAKETIME(0, :nvminutes, :nvsecondes), :nvchaises, :nvpupitres, :nvmateriel)');
     $req->execute(array(
+        'nvordre' => $nvordre,
         'audid' => $_SESSION['id_aud'],
         'nvtitre' => $nvtitre,
         'nvcompositeur' => $nvcompositeur,
@@ -64,6 +72,9 @@ cleanBaseEleve();
 
 $_SESSION['displaySaveOk'] = true;
 unset($_SESSION['edition_morceau']);
+unset($_SESSION['morceau_tmp']);
+unset($_SESSION['eleves_tmp']);
+unset($_SESSION['eleves_suppr']);
 
 header('Location: audition.php');
 ?> 

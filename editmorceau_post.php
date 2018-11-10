@@ -38,7 +38,7 @@ if (isset($_POST['morceauchoisi'])) { // si on est en mode édition avec un morc
     print_r($_SESSION['morceau_tmp']);*/
     
 } else { // sinon c'est que l'utilisateur a oublié de sélectionner un morceau, on lui dit et lui propose d'ajouter un nouveau morceau à la place
-    $_SESSION['erreuredition'] = "Pour modifier un morceau, vous devez le sélectionner dans la liste avant de cliquer sur le bouton \"Editer un morceau\". Vous pouvez cliquer sur \"Annuler\" pour revenir à la page précédente et effectuer votre sélection, ou si vous vous ravisez, vous pouvez profiter de ce formulaire pour saisir un nouveau morceau !";
+    $_SESSION['erreurEdition'] = "Pour modifier un morceau, vous devez le sélectionner dans la liste avant de cliquer sur le bouton \"Editer un morceau\". Vous pouvez cliquer sur \"Annuler\" pour revenir à la page précédente et effectuer votre sélection, ou si vous vous ravisez, vous pouvez profiter de ce formulaire pour saisir un nouveau morceau !";
     $_SESSION['morcceau_tmp']['titre'] = '';
     $_SESSION['morcceau_tmp']['compositeur'] = '';
     $_SESSION['morcceau_tmp']['minutes'] = 0;
@@ -47,6 +47,7 @@ if (isset($_POST['morceauchoisi'])) { // si on est en mode édition avec un morc
     $_SESSION['morcceau_tmp']['pupitres'] = 0;
     $_SESSION['morcceau_tmp']['materiel'] = '';
     $_SESSION['edition_morceau'] = false;
+    $_SESSION['eleves_tmp'] = [];
 }
 
 header('Location: morceau.php');

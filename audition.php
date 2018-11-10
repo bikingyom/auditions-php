@@ -65,12 +65,9 @@
                             }
                             else
                             {
-                        ?>
-
-								<!--<c:if test="${ !(empty erreuredition || erreuredition == null) }">
-	        						<p class="warning"><c:out value="${ erreuredition }" /></p>
-	        					</c:if>-->
-								<?php
+								if(isset($_SESSION['erreurEdition'])) {
+								    echo '<p class="warning">' . htmlspecialchars($_SESSION['erreurEdition']) . '</p>';
+								}
 								if(isset($_SESSION['ordre'])) {
 								?>
 									<div id="boutons-ordre">
@@ -198,4 +195,8 @@
 			</div>
 		</div>   
 	</body>
-</html> 
+</html>
+<?php 
+unset($_SESSION['erreurEdition']);
+unset($_SESSION['displaySaveOk']);
+?>

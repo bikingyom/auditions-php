@@ -44,7 +44,6 @@ function switchOrdre($bdd, $ordre, $id) {
     $reponse_ordre->execute(array($ordre, $id));
 }
 
-unset($_SESSION['displaySaveOk']);
 $_SESSION['ordre'] = true;
 
 if($_POST['bouton'] == "Changer l'ordre") {
@@ -98,11 +97,10 @@ elseif($_POST['bouton'] == 'haut' || $_POST['bouton'] == 'bas') {
     
         // on remplace le numéro d'ordre du morceau choisi par le numéro d'ordre du morceau précédent-suivant
         switchOrdre($bdd, $ordre_autre, $_POST['morceauchoisi']);
- 
         // on remplace le numéro d'ordre du morceau précédent-suivant par le numéro d'ordre du morceau choisi
         switchOrdre($bdd, $ordre, $id_autre);
     } else {
-        $ordre_autre = $ordre; // nécéssaire pour trouver le précédent quand même
+        $ordre_autre = $ordre; // nécéssaire pour trouver le précédent (pour l'ancre) quand même
     }
     
     // on récupère le numéro d'ordre du morceau précédant le morceau à sa nouvelle place

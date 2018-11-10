@@ -58,11 +58,18 @@
         					<section>
         						<div class="bloc-tableau">
                                     <?php
+                                    if(isset($_SESSION['morceau_tmp']['id'])) {
                                         $reponse_morceaux = $bdd->prepare('SELECT id, titre, compositeur FROM morceaux WHERE audition_id = :idaud AND id != :idmo');
                                         $reponse_morceaux->execute(array(
                                             'idaud' => $_SESSION['id_aud'],
                                             'idmo' => $_SESSION['morceau_tmp']['id']
                                             ));
+                                    } else {
+                                        $reponse_morceaux = $bdd->prepare('SELECT id, titre, compositeur FROM morceaux WHERE audition_id = :idaud');
+                                        $reponse_morceaux->execute(array(
+                                            'idaud' => $_SESSION['id_aud'],
+                                        ));
+                                    }
                                         while ($morceau = $reponse_morceaux->fetch()) {
                                             $mo_id = $morceau['id'];
                                     ?>
