@@ -17,8 +17,8 @@
                 	document.getElementById('formmorceau').action='editmorceau_post.php';
 				else if(elt.value == 'Restaurer des morceaux')
 					document.getElementById('formmorceau').action='restaurermorceaux';
-				else if(elt.value == "haut" || elt.value == "bas" || elt.value == "Changer l'ordre")
-					document.getElementById('formmorceau').action='auditiongestion#ancre';
+				else if(elt.value == "haut" || elt.value == "bas" || elt.value == "Changer l'ordre" || elt.value == "Annuler" || elt.value == "Valider l'ordre")
+					document.getElementById('formmorceau').action='changerordre_post.php';
 				else if(elt.value == "Editer")
 					document.getElementById('formmorceau').action='dateheurelieu';
 				else if(elt.value == "Accueil")
@@ -37,9 +37,11 @@
         <div class="limiter height-100">
 			<div class="conteneur-1200 height-100">
         		<div class="formulaire height-100 formuflex">
-        			<!-- <c:if test="${ displaySaveOk }">
-        				<p id="tempo">Vos modifications ont bien été enregistrées.</p>
-        			</c:if> -->
+        			<?php
+        			if(isset($_SESSION['displaySaveOk'])) {
+        			    echo '<p id="tempo">Vos modifications ont bien été enregistrées.</p>'; 
+        			}
+        			?>
         			<header>
                         <?php
                             $reponse_audition = $bdd->prepare('SELECT DATE_FORMAT(date_audition, \'%d/%m/%Y à %Hh%i\') AS date, lieu FROM auditions WHERE id = ?');
@@ -67,13 +69,17 @@
 
 								<!--<c:if test="${ !(empty erreuredition || erreuredition == null) }">
 	        						<p class="warning"><c:out value="${ erreuredition }" /></p>
-	        					</c:if>
-								<c:if test="${ ordre }">
+	        					</c:if>-->
+								<?php
+								if(isset($_SESSION['ordre'])) {
+								?>
 									<div id="boutons-ordre">
 										<input type="submit" name="bouton" value="haut" form="formmorceau" id="bouton-haut" onclick="lancer(this)" />
 										<input type="submit" name="bouton" value="bas" form="formmorceau" id="bouton-bas" onclick="lancer(this)" />
 									</div>
-								</c:if>-->
+								<?php
+								}
+								?>								
     	    					<div class="bloc-tableau">
     	    					
     	    						<div class="contenu-morceau grand gras">
@@ -89,15 +95,20 @@
       								<!--<c:set var="i" value="0" scope="page" />-->
       								
       								<?php
-                                        $reponse = $bdd->prepare('SELECT id, titre, compositeur, MINUTE(duree) AS minutes, SECOND(duree) AS secondes, chaises, pupitres, materiel FROM morceaux WHERE audition_id = ?');
+                                        $reponse = $bdd->prepare('SELECT id, titre, compositeur, MINUTE(duree) AS minutes, SECOND(duree) AS secondes, chaises, pupitres, materiel FROM morceaux WHERE audition_id = ? ORDER BY ordre');
                                         $reponse->execute(array($_SESSION['id_aud']));
                                         while ($morceau = $reponse->fetch()) {
                                     ?>
-       									<!--<c:set var="i" value="${ i+1 }" scope="page" />-->
         								<div class="bloc-morceau" ondblclick="openEditor()">
 	        								<label class="radiolabel" for="<?php echo htmlspecialchars($morceau['id']); ?>"></label>
-        									<!--<c:if test="${ i == isauve }"><a id="ancre"></a></c:if>-->
-   	    									<input type="radio" name="morceauchoisi" value="<?php echo htmlspecialchars($morceau['id']); ?>" id="<?php echo htmlspecialchars($morceau['id']); ?>" form="formmorceau" ${ (ordre == true && hashLocal == hashChoisi) ? 'checked="checked"' : '' } />
+	        								<?php 
+	        								if(isset($_SESSION['id_ancre'])) {
+	        								    if($morceau['id'] == $_SESSION['id_ancre']) {
+	        								        echo '<a id="ancre"></a>';
+	        								    }
+	        								}
+	        								?>
+   	    									<input type="radio" name="morceauchoisi" value="<?php echo htmlspecialchars($morceau['id']); ?>" id="<?php echo htmlspecialchars($morceau['id']); ?>" form="formmorceau" <?php if(isset($_SESSION['morceauchoisi'])) { echo isset($_SESSION['ordre']) && $morceau['id'] == $_SESSION['morceauchoisi'] ? 'checked="checked"' : ''; } ?> />
                                             <div class="contenu-morceau grand">
 												<div id="elt2"><?php echo htmlspecialchars($morceau['titre']); ?></div>
 												<div id="elt3"><?php echo htmlspecialchars($morceau['compositeur']); ?></div><br />
@@ -164,18 +175,23 @@
                     </section>
         			<footer>
         				<form action="" onsubmit="" method="post" id="formmorceau">
-        					<!--<c:choose>
-        						<c:when test="${ ordre }">
+        					<?php
+        					   if(isset($_SESSION['ordre']))
+        					   {
+        					?>
         							<input type="submit" name="bouton" value="Valider l'ordre" onclick="lancer(this)" title="Valider et enregistrer le nouvel ordre des morceaux" />
-        						</c:when>
-        						<c:otherwise>-->
+        							<input type="submit" name="bouton" value="Annuler" onclick="lancer(this)" title="Annuler et revenir à l'ordre antérieur des morceaux" />
+        					<?php 
+        					   } else {
+       					    ?>
 									<input type="submit" name="bouton" value="Ajouter un morceau" onclick="lancer(this)" title="Ajouter un nouveau morceau à l'audition" />
 									<input type="submit" name="bouton" value="Editer un morceau" onclick="lancer(this)" <?php echo $nb_morceaux == 0 ? 'class="display-none"' : ''; ?> title="Modifier le morceau sélectionné" />
-									<!--<input type="submit" name="bouton" value="Changer l'ordre" onclick="lancer(this)" <?php echo $nb_morceaux == 0 ? 'class="display-none"' : '' ?> title="Modifier l'ordre des morceaux en faisant monter ou descenddre le morceau sélectionné" />-->
+									<input type="submit" name="bouton" value="Changer l'ordre" onclick="lancer(this)" <?php echo $nb_morceaux == 0 ? 'class="display-none"' : '' ?> title="Modifier l'ordre des morceaux en faisant monter ou descenddre le morceau sélectionné" />
 									<input type="submit" name="bouton" value="Supprimer un morceau" onclick="lancer(this)" <?php echo $nb_morceaux == 0 ? 'class="display-none"' : '' ?> title="Supprimer le morceau sélectionné" />
-									<!--<input type="submit" name="bouton" value="Restaurer des morceaux" onclick="lancer(this)" ${ empty sessionScope.audition.morceauxSuppr ? 'class="display-none"' : '' } title="Afficher la corbeille et restaurer un ou plusieurs morceaux"/>
-								</c:otherwise>
-							</c:choose>-->
+									<!-- <input type="submit" name="bouton" value="Restaurer des morceaux" onclick="lancer(this)" ${ empty sessionScope.audition.morceauxSuppr ? 'class="display-none"' : '' } title="Afficher la corbeille et restaurer un ou plusieurs morceaux"/>-->
+							<?php
+        					   }
+							?>
 						</form>
 					</footer>
         		</div>

@@ -62,6 +62,7 @@ foreach ($_SESSION['eleves_tmp'] as $eleve) {
 // on fait le ménage dans la bdd s'il y a eu des élèves supprimés
 cleanBaseEleve();
 
+$_SESSION['displaySaveOk'] = true;
 unset($_SESSION['edition_morceau']);
 
 header('Location: audition.php');
